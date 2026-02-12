@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Valentine Card</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        .card {
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            animation: cardGlow 2s infinite alternate;
+            cursor: grab;
+            z-index: 10;
+            transition: transform 0.1s ease-out; /* Smooth transition for dragging */
+        }
+        .card:active {
+            cursor: grabbing;
+        }
+        @keyframes cardGlow {
+            0% { box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+            100% { box-shadow: 0 10px 40px rgba(255,105,180,0.5); }
+        }
+        .heart {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: #ff0000;
+            transform: rotate(-45deg);
+            animation: beat 1.5s infinite;
+        }
+        .heart::before, .heart::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -50px;
+            left: 0;
+        }
+        .heart::after {
+            top: 0;
+            left: 50px;
+        }
+        @keyframes beat {
+            0%, 100% { transform: rotate(-45deg) scale(1); }
+            50% { transform: rotate(-45deg) scale(1.1); }
+        }
+        .floating-heart {
+            position: absolute;
+            font-size: 30px;
+            color: #ff69b4;
+            animation: float 4s infinite ease-in-out;
+        }
+        .floating-heart:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-heart:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+        .floating-heart:nth-child(3) { top: 40%; left: 20%; animation-delay: 2s; }
+        .floating-heart:nth-child(4) { top: 60%; right: 10%; animation-delay: 3s; }
+        .floating-heart:nth-child(5) { top: 80%; left: 15%; animation-delay: 4s; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+            animation: fadeIn 3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        .signature {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            color: #ff1493;
+            animation: slideUp 2s ease-out 1s both;
+        }
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .dodge-button {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background: #ff1493;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100px;
+            height: 40px;
+            transition: left 0.3s ease, top 0.3s ease;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+        .here-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <button class="here-button" id="hereBtn">Here</button>
+    <div class="card" id="card">
+        <div class="heart" style="top: 200px; left: 150px;"></div>
+        <div class="floating-heart">❤️</div>
+        <div class="floating-heart">💖</div>
+        <div class="floating-heart">💕</div>
+        <div class="floating-heart">💗</div>
+        <div class="floating-heart">💓</div>
+        <div class="message">
+            Happy Valentine's Day!<br>
+            You are my everything.
+        </div>
+        <button class="dodge-button" id="dodgeBtn">Click Me</button>
+        <div class="signature">find the hidden content</div>
+    </div>
+
+    <script>
+        // Smooth dragging functionality for the card using transform
+        const card = document.getElementById('card');
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+
+        card.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            const rect = card.getBoundingClientRect();
+            initialX = rect.left - window.innerWidth / 2 + rect.width / 2; // Relative to center
+            initialY = rect.top - window.innerHeight / 2 + rect.height / 2;
+            card.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                const newX = initialX + deltaX;
+                const newY = initialY + deltaY;
+                card.style.transform = `translate(${newX}px, ${newY}px)`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            card.style.cursor = 'grab';
+        });
+
+        // Dodging button functionality
+        const button = document.getElementById('dodgeBtn');
+
+        button.addEventListener('mousemove', (event) => {
+            const cardRect = card.getBoundingClientRect();
+            const btnRect = button.getBoundingClientRect();
+            const mouseX = event.clientX - cardRect.left;
+            const mouseY = event.clientY - cardRect.top;
+            const btnCenterX = btnRect.left - cardRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top - cardRect.top + btnRect.height / 2;
+
+            let newX = btnCenterX;
+            let newY = btnCenterY;
+            const dodgeDistance = 100;
+
+            if (mouseX > btnCenterX) {
+                newX -= dodgeDistance;
+            } else {
+                newX += dodgeDistance;
+            }
+
+            if (mouseY > btnCenterY) {
+                newY -= dodgeDistance;
+            } else {
+                newY += dodgeDistance;
+            }
+
+            newX = Math.max(0, Math.min(newX - btnRect.width / 2, cardRect.width - btnRect.width));
+            newY = Math.max(0, Math.min(newY - btnRect.height / 2, cardRect.height - btnRect.height));
+
+            button.style.left = newX + 'px';
+            button.style.top = newY + 'px';
+            button.style.transform = 'none';
+        });
+
+        // "Here" button click to redirect
+        const hereBtn = document.getElementById('hereBtn');
+        hereBtn.addEventListener('click', () => {
+            window.location.href = 'codes/blank.html';
+        });
+    </script>
+</body>
+</html>

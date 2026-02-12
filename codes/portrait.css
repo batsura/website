@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+}
+p {
+    font-size: 12px;
+    line-height: 8px;
+    text-align: justify;
+    background: url(image1.jpg) no-repeat center;
+    background-attachment: fixed;
+    background-size: 40% auto;  /* Changed from cover to contain */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0);
+}
